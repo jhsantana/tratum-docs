@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "Tratum API",
+    "description": "Esta documentação fornece as informações necessárias para integrar-se ao nosso ecosistema. Nossas APIs permite que os clientes enviem solicitações para analisar, consultar, monitorar dados associados a um documento específico.",
     "license": {
       "name": "MIT"
     },
@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://search.tratum.com.br"
     }
   ],
   "security": [
@@ -19,54 +19,15 @@
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/v1/login": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "description": "Endpoint responsável pela autenticação",
         "requestBody": {
-          "description": "Plant to add to the store",
+          "description": "Corpo da requisição",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/Login"
               }
             }
           },
@@ -74,21 +35,35 @@
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "Retorno com sucesso da autenticação",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "description": "E-mail",
+                      "type": "string"
+                    },
+                    "username": {
+                      "description": "Usuário",
+                      "type": "string"
+                    },
+                    "token": {
+                      "description": "Bearer token",
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Não autorizado, verificar as credenciais.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorLogin"
                 }
               }
             }
@@ -96,14 +71,90 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/v1/refreshtoken": {
+      "post": {
+        "description": "Endpoint responsável pelo refresh do bearer token",
+        "requestBody": {
+          "description": "Corpo da requisição",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "description": "E-mail",
+                    "type": "string"
+                  },
+                  "username": {
+                    "description": "Usuário",
+                    "type": "string"
+                  },
+                  "refreshToken": {
+                    "description": "Bearer token",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Retorno com sucesso da autenticação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "description": "E-mail",
+                      "type": "string"
+                    },
+                    "username": {
+                      "description": "Usuário",
+                      "type": "string"
+                    },
+                    "token": {
+                      "description": "Bearer token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado, verificar as credenciais.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorLogin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/holder/{holderId}/organization/{organizationId}/balance": {
+      "get": {
+        "description": "Listar saldos dos planos disponíveis",
         "parameters": [
           {
-            "name": "id",
+            "name": "holderId",
             "in": "path",
-            "description": "ID of plant to delete",
+            "description": "ID do parceiro",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "ID da organização",
             "required": true,
             "schema": {
               "type": "integer",
@@ -112,16 +163,1130 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Consulta de saldo e plano atual",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "sucess": {
+                      "type": "boolean",
+                      "description": "Indica se a operação foi bem-sucedida"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "Razão de falha, se aplicável"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total de registros"
+                    },
+                    "balance": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "balance": {
+                            "type": "object",
+                            "properties": {
+                              "available": {
+                                "type": "integer",
+                                "description": "Saldo disponível"
+                              },
+                              "consume": {
+                                "type": "integer",
+                                "description": "Saldo consumido"
+                              },
+                              "plan": {
+                                "type": "object",
+                                "properties": {
+                                  "limitIni": {
+                                    "type": "integer"
+                                  },
+                                  "hasMindMap": {
+                                    "type": "boolean"
+                                  },
+                                  "planName": {
+                                    "type": "string"
+                                  },
+                                  "limitEnd": {
+                                    "type": "integer"
+                                  },
+                                  "isVisible": {
+                                    "type": "boolean"
+                                  },
+                                  "limitQtdDocument": {
+                                    "type": "integer"
+                                  },
+                                  "typePlan": {
+                                    "type": "string"
+                                  },
+                                  "createdAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "planId": {
+                                    "type": "integer"
+                                  },
+                                  "typeOrganization": {
+                                    "type": "string"
+                                  },
+                                  "hasCertification": {
+                                    "type": "boolean"
+                                  },
+                                  "typePlanCash": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorLogin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/holder/{holderId}/organization/{organizationId}/partner/process": {
+      "post": {
+        "description": "Api para consultar a quantidade de processos de um CPF ou CNPJ",
+        "parameters": [
+          {
+            "name": "holderId",
+            "in": "path",
+            "description": "ID do parceiro",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "ID da organização",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Corpo da requisição",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "documentType": {
+                    "description": "Tipo do documento, somente duas opções válidas: CPF | CNPJ",
+                    "type": "string"
+                  },
+                  "documentNumber": {
+                    "description": "Valor do documento CPF / CNPJ",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado do consumo de plano do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indica se a operação foi bem-sucedida"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "Razão de falha ou código adicional"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total de registros encontrados"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "accessPauseMonitor": {
+                            "type": "boolean",
+                            "description": "Se o monitoramento pode ser pausado"
+                          },
+                          "documentInfo": {
+                            "type": "string",
+                            "description": "Nome ou descrição associada ao documento"
+                          },
+                          "dayPauseMonitor": {
+                            "type": "integer",
+                            "description": "Dias disponíveis para pausar monitoramento"
+                          },
+                          "documentType": {
+                            "type": "string",
+                            "description": "Tipo de documento (ex: CNPJ)"
+                          },
+                          "documentNumber": {
+                            "type": "string",
+                            "description": "Número do documento (ex: CNPJ)"
+                          },
+                          "consume": {
+                            "type": "integer",
+                            "description": "Quantidade consumida"
+                          },
+                          "typePlan": {
+                            "type": "string",
+                            "description": "Tipo de plano (ex: SEARCH_PROCESS)"
+                          },
+                          "userPlanConsumeUniqueId": {
+                            "type": "integer",
+                            "description": "Identificador único do consumo"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Data de criação"
+                          },
+                          "deletedAt": {
+                            "type": ["string", "null"],
+                            "format": "date-time",
+                            "description": "Data de exclusão, se aplicável"
+                          },
+                          "planChangedAt": {
+                            "type": ["string", "null"],
+                            "format": "date-time",
+                            "description": "Data de alteração de plano, se aplicável"
+                          },
+                          "dtAvailablePause": {
+                            "type": ["string", "null"],
+                            "format": "date-time",
+                            "description": "Data disponível para pausar, se aplicável"
+                          },
+                          "typeSearch": {
+                            "type": "string",
+                            "description": "Tipo de busca"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Data de atualização"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorLogin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/analytics": {
+      "post": {
+        "description": "API para analisar dados associados a um documento específico.",
+        "requestBody": {
+          "description": "Corpo da requisição",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "holderId": {
+                    "description": "ID do parceiro",
+                    "type": "integer"
+                  },
+                  "organizationId": {
+                    "description": "ID da organização",
+                    "type": "integer"
+                  },
+                  "planId": {
+                    "description": "ID do plano",
+                    "type": "integer"
+                  },
+                  "documentType": {
+                    "description": "Tipo de documento CNPJ | CPF",
+                    "type": "string"
+                  },
+                  "documentNumber": {
+                    "description": "Número do documento",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado da análise premium com protesto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "documentInfo": {
+                          "type": "string",
+                          "description": "Nome associado ao documento"
+                        },
+                        "documentNumber": {
+                          "type": "string",
+                          "description": "Número do documento (ex: CPF)"
+                        },
+                        "statusIndex": {
+                          "type": "string",
+                          "description": "Status da indexação (ex: INITIAL)"
+                        },
+                        "statusProtest": {
+                          "type": "string",
+                          "description": "Status de protesto (ex: INITIAL)"
+                        },
+                        "lastUserPlanConsumeAnalytics": {
+                          "type": "integer",
+                          "description": "ID do último consumo de plano analítico"
+                        },
+                        "statusReport": {
+                          "type": "string",
+                          "description": "Status do relatório (ex: INITIAL)"
+                        },
+                        "typePlan": {
+                          "type": "string",
+                          "description": "Tipo do plano (ex: SEARCH_ANALYZER_PREMIUM_PROTEST)"
+                        },
+                        "userPlanConsumeUniqueId": {
+                          "type": "integer",
+                          "description": "ID único de consumo do plano"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Data de criação do registro"
+                        },
+                        "userPlanConsumeAnalyticsId": {
+                          "type": "integer",
+                          "description": "ID da análise"
+                        },
+                        "totalProcessesEstimated": {
+                          "type": "integer",
+                          "description": "Quantidade estimada de processos"
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Status geral da operação (ex: INITIAL)"
+                        }
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Status da resposta (ex: success)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorLogin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/analytics/{userPlanConsumeAnalyticsId}": {
+      "post": {
+        "description": "API para resumir o total por classificação de risco do CPF ou CNPJ.",
+        "parameters":[
+          {
+            "name": "userPlanConsumeAnalyticsId",
+            "in": "path",
+            "description": "ID da análise",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Corpo da requisição",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "holderId": {
+                    "description": "ID do parceiro",
+                    "type": "integer"
+                  },
+                  "organizationId": {
+                    "description": "ID da organização",
+                    "type": "integer"
+                  },
+                  "userPlanConsumeUniqueId": {
+                    "description": "ID da consulta - Gerado no endpoint /v2/analytics",
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+          "description": "Resumo do relatório de análise premium com protesto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "success": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "reason": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "register": {
+                    "type": "object",
+                    "properties": {
+                      "summary": {
+                        "type": "object",
+                        "properties": {
+                          "ALL": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "ISDEFENDANT": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "RISK_PROTEST": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "EXECUTION_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "IS_ACTIVE_WITHOUT_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "PERSON_NOT_CLASSIFIED": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "ISAUTHOR": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "IS_INACTIVE_WITHOUT_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "IS_INACTIVE_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "RISK_WORKER": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "ISDEFENDANT_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "CRIMINAL_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "RISK_DEBTOR": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "PERSON_NOT_CLASSIFIED_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "RISK_EXECUTION": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "ISAUTHOR_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "IS_ACTIVE_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "WORKER_WITH_RISK": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "RISK_CRIMINAL": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          },
+                          "LITIGATION": {
+                            "type": "object",
+                            "properties": {
+                              "vltotalProcess": { "type": ["string", "number"] },
+                              "totalProcess": { "type": "integer" }
+                            }
+                          }
+                        }
+                      },
+                      "userPlanConsumeProtestSummaryId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "594c6a7d-2a05-468a-a535-594c6a7d"
+                      },
+                      "bucketName": {
+                        "type": "string",
+                        "example": "bucket"
+                      },
+                      "statusIndex": {
+                        "type": "string",
+                        "example": "DONE"
+                      },
+                      "statusProtest": {
+                        "type": "string",
+                        "example": "INITIAL"
+                      },
+                      "filenameFull": {
+                        "type": "string",
+                        "example": "30072024_180018_FULL_7658.xlsx"
+                      },
+                      "lastUserPlanConsumeAnalytics": {
+                        "type": "integer",
+                        "example": 7642
+                      },
+                      "statusReport": {
+                        "type": "string",
+                        "example": "DONE"
+                      },
+                      "typePlan": {
+                        "type": "string",
+                        "example": "SEARCH_ANALYZER_PREMIUM_PROTEST"
+                      },
+                      "urlTempFull": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://s3.aws.com/bucket/xxx/ANALYTICS/xxx/30072024_180018_FULL_7658.xlsx"
+                      },
+                      "userPlanConsumeUniqueId": {
+                        "type": "integer",
+                        "example": 1082
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "30/07/2024 14:59:18"
+                      },
+                      "userPlanConsumeAnalyticsId": {
+                        "type": "integer",
+                        "example": 7658
+                      },
+                      "folder": {
+                        "type": "string",
+                        "example": "xxx/ANALYTICS/xxx/"
+                      },
+                      "urlTemp": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://s3.aws.com/bucket/xxx/ANALYTICS/xxx/30072024_180018_7658.xlsx"
+                      },
+                      "importantTerms": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": [""]
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "DONE"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+            "description": "Não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorLogin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/holder/{holderId}/organization/{organizationId}/activities": {
+      "get": {
+        "description": "API retorna a lista de análises",
+        "parameters": [
+          {
+            "name": "holderId",
+            "in": "path",
+            "description": "ID do parceiro",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "ID da organização",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da listagem das análises disponíveis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucess": { "type": "boolean" },
+                    "reason": { "type": "string" },
+                    "total": { "type": "integer" },
+                    "from": { "type": "integer" },
+                    "to": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "accessPauseMonitor": { "type": "boolean" },
+                          "createdAtDate": { "type": "number" },
+                          "documentInfo": { "type": "string" },
+                          "daypausemonitor": { "type": "integer" },
+                          "documentType": { "type": "string" },
+                          "documentNumber": { "type": "string" },
+                          "consume": { "type": "integer" },
+                          "typePlan": { "type": "string" },
+                          "rfBaseStatus": { "type": "string" },
+                          "userPlanConsumeUniqueId": { "type": "integer" },
+                          "createdAt": { "type": "string" },
+                          "deletedAt": { "type": ["string", "null"] },
+                          "planChangedAt": { "type": ["string", "null"] },
+                          "latestTotalAnalyzed": { "type": "integer" },
+                          "latestTotalRisk": { "type": "integer" },
+                          "dtAvailablePause": { "type": ["string", "null"] },
+                          "typeSearch": { "type": "string" },
+                          "userPlanConsumeAnalytics": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "userPlanConsumeProtestSummaryId": { "type": "string" },
+                                "bucketName": { "type": "string" },
+                                "hasMindMap": { "type": "boolean" },
+                                "userPlanConsumeGovernmentDebtorSummaryId": { "type": "string" },
+                                "faturamentoEstimado": { "type": ["number", "null"] },
+                                "statusIndex": { "type": "string" },
+                                "statusProtest": { "type": "string" },
+                                "filenameFull": { "type": "string" },
+                                "statusDebtor": { "type": "string" },
+                                "lastUserPlanConsumeAnalytics": { "type": "integer" },
+                                "statusReport": { "type": "string" },
+                                "typePlan": { "type": "string" },
+                                "userPlanConsumeUniqueId": { "type": "integer" },
+                                "createdAt": { "type": "string" },
+                                "userPlanConsumeAnalyticsId": { "type": "integer" },
+                                "folder": { "type": "string" },
+                                "filename": { "type": ["string", "null"] },
+                                "statusQSA": { "type": "string" },
+                                "hasCertification": { "type": "boolean" },
+                                "importantTerms": {
+                                  "type": "array",
+                                  "items": { "type": "string" }
+                                },
+                                "status": { "type": "string" }
+                              },
+                              "required": [
+                                "userPlanConsumeProtestSummaryId", "bucketName", "hasMindMap",
+                                "userPlanConsumeGovernmentDebtorSummaryId", "statusIndex",
+                                "statusProtest", "filenameFull", "statusDebtor",
+                                "lastUserPlanConsumeAnalytics", "statusReport", "typePlan",
+                                "userPlanConsumeUniqueId", "createdAt", "userPlanConsumeAnalyticsId",
+                                "folder", "statusQSA", "hasCertification", "importantTerms", "status"
+                              ]
+                            }
+                          },
+                          "updatedAt": { "type": "string" }
+                        },
+                        "required": [
+                          "accessPauseMonitor", "createdAtDate", "documentInfo", "daypausemonitor",
+                          "documentType", "documentNumber", "consume", "typePlan", "rfBaseStatus",
+                          "userPlanConsumeUniqueId", "createdAt", "latestTotalAnalyzed",
+                          "latestTotalRisk", "typeSearch", "userPlanConsumeAnalytics", "updatedAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["sucess", "reason", "total", "from", "to", "limit", "result"]
+                }                
+              }
+            }
+          },
+          "403": {
+            "description": "Não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorLogin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/holder/{holderId}/organization/{organizationId}/consumeunique/{userPlanConsumeUniqueId}/analytics/{userPlanConsumeAnalyticsId}/detail?size={size}&typeRisk={typeRisk}": {
+      "get": {
+        "description": "API de detalhes de uma determinada  de risco",
+        "parameters": [
+          {
+            "name": "holderId",
+            "in": "path",
+            "description": "ID do parceiro",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "ID da organização",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "userPlanConsumeUniqueId",
+            "in": "path",
+            "description": "Identificador único do consumo",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "userPlanConsumeAnalyticsId",
+            "in": "path",
+            "description": "Identificador único da análise",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Quantidade de itens na resposta",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "typeRisk",
+            "in": "query",
+            "description": "Classificação de risco: RISK_WORKER | RISK_EXECUTION | RISK_CRIMINAL | LITIGATION",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta com detalhes de uma análise por classificação de risco",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucess": {
+                      "type": "boolean",
+                      "description": "Indica se a operação foi bem-sucedida"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "Motivo da resposta (caso haja algum erro ou mensagem)"
+                    },
+                    "register": {
+                      "type": "object",
+                      "properties": {
+                        "vltotalProcess": {
+                          "type": "string",
+                          "description": "Valor total dos processos"
+                        },
+                        "vltotalProcess_RISK_WORKER": {
+                          "type": "string",
+                          "description": "Valor total dos processos com risco para o trabalhador"
+                        },
+                        "totalProcess": {
+                          "type": "integer",
+                          "description": "Quantidade total de processos"
+                        },
+                        "vltotalProcess_ISDEFENDANT_WITH_RISK": {
+                          "type": "string",
+                          "description": "Valor total dos processos com réu e risco"
+                        },
+                        "vltotalProcess_ISAUTHOR": {
+                          "type": "string",
+                          "description": "Valor total dos processos com autor"
+                        },
+                        "vltotalProcess_ISAUTHOR_WITH_RISK": {
+                          "type": "string",
+                          "description": "Valor total dos processos com autor e risco"
+                        },
+                        "vltotalProcess_RISK_WORKER_SECUNDARY": {
+                          "type": "string",
+                          "description": "Valor total dos processos com risco secundário para o trabalhador"
+                        },
+                        "vltotalProcess_ISDEFENDANT": {
+                          "type": "string",
+                          "description": "Valor total dos processos com réu"
+                        },
+                        "totalProcess_RISK_WORKER": {
+                          "type": "integer",
+                          "description": "Quantidade de processos com risco para o trabalhador"
+                        },
+                        "totalProcess_ISAUTHOR_WITH_RISK": {
+                          "type": "integer",
+                          "description": "Quantidade de processos com autor e risco"
+                        },
+                        "docs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "process": {
+                                "type": "string",
+                                "description": "Número do processo"
+                              },
+                              "user_plan_consume_analytics_id": {
+                                "type": "integer",
+                                "description": "ID do plano de consumo do usuário"
+                              },
+                              "partner_process_analytics_id": {
+                                "type": "string",
+                                "description": "ID de análise do processo do parceiro"
+                              },
+                              "distribution_date": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Data de distribuição do processo"
+                              },
+                              "year_distribution_date": {
+                                "type": "string",
+                                "description": "Ano da distribuição"
+                              },
+                              "month_distribution_date": {
+                                "type": "string",
+                                "description": "Mês e ano da distribuição"
+                              },
+                              "process_is_author": {
+                                "type": "boolean",
+                                "description": "Indica se o processo é de autor"
+                              },
+                              "process_is_defendant": {
+                                "type": "boolean",
+                                "description": "Indica se o processo é de réu"
+                              },
+                              "process_is_relevant_disputes": {
+                                "type": "boolean",
+                                "description": "Indica se o processo está relacionado a disputas relevantes"
+                              },
+                              "priority": {
+                                "type": "integer",
+                                "description": "Prioridade do processo"
+                              },
+                              "status_custom": {
+                                "type": "string",
+                                "description": "Status personalizado do processo"
+                              },
+                              "status_partner": {
+                                "type": "string",
+                                "description": "Status do parceiro"
+                              },
+                              "court": {
+                                "type": "string",
+                                "description": "Tribunal responsável pelo julgamento"
+                              },
+                              "type_court": {
+                                "type": "string",
+                                "description": "Tipo de tribunal"
+                              },
+                              "judging_organ": {
+                                "type": "string",
+                                "description": "Órgão julgador do processo"
+                              },
+                              "instance": {
+                                "type": "string",
+                                "description": "Instância do processo"
+                              },
+                              "value_claim": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Valor da causa"
+                              },
+                              "type_risk": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "description": "Tipo de risco relacionado ao processo"
+                                }
+                              },
+                              "content": {
+                                "type": "object",
+                                "properties": {
+                                  "classe": {
+                                    "type": "string",
+                                    "description": "Classe do processo"
+                                  },
+                                  "instance": {
+                                    "type": "string",
+                                    "description": "Instância do processo"
+                                  },
+                                  "reus": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "documento": {
+                                          "type": "string",
+                                          "description": "Documento do réu"
+                                        },
+                                        "nome": {
+                                          "type": "string",
+                                          "description": "Nome do réu"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "valorDaCausa": {
+                                    "type": "string",
+                                    "description": "Valor da causa"
+                                  },
+                                  "autores": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "documento": {
+                                          "type": "string",
+                                          "description": "Documento do autor"
+                                        },
+                                        "nome": {
+                                          "type": "string",
+                                          "description": "Nome do autor"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "court": {
+                                    "type": "string",
+                                    "description": "Tribunal responsável"
+                                  },
+                                  "tribunalPassordId": {
+                                    "type": "integer",
+                                    "description": "ID do tribunal"
+                                  },
+                                  "assunto": {
+                                    "type": "string",
+                                    "description": "Assunto relacionado ao processo"
+                                  },
+                                  "uf": {
+                                    "type": "string",
+                                    "description": "Unidade federativa"
+                                  },
+                                  "ref": {
+                                    "type": "string",
+                                    "description": "Referência do processo"
+                                  },
+                                  "dataDistribuicao": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Data de distribuição do processo"
+                                  },
+                                  "typeCourt": {
+                                    "type": "string",
+                                    "description": "Tipo de tribunal"
+                                  },
+                                  "autoProc": {
+                                    "type": "integer",
+                                    "description": "Autuação do processo"
+                                  },
+                                  "orgaoJulgador": {
+                                    "type": "string",
+                                    "description": "Órgão julgador do processo"
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "description": "Status do processo"
+                                  }
+                                }
+                              },
+                              "archived": {
+                                "type": "boolean",
+                                "description": "Indica se o processo foi arquivado"
+                              }
+                            }
+                          }
+                        },
+                        "totalProcess_RISK_WORKER_SECUNDARY": {
+                          "type": "integer",
+                          "description": "Quantidade de processos com risco secundário para o trabalhador"
+                        },
+                        "totalProcess_ISAUTHOR": {
+                          "type": "integer",
+                          "description": "Quantidade de processos de autor"
+                        },
+                        "totalProcess_ISDEFENDANT": {
+                          "type": "integer",
+                          "description": "Quantidade de processos de réu"
+                        },
+                        "totalProcess_ISDEFENDANT_WITH_RISK": {
+                          "type": "integer",
+                          "description": "Quantidade de processos de réu com risco"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -169,6 +1334,45 @@
             "type": "string"
           }
         }
+      },
+      "Login": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "description": "E-mail de autenticação",
+            "type": "string"
+          },
+          "password": {
+            "description": "Senha de autenticação",
+            "type": "string"
+          }
+        }
+      },
+      "SuccessLogin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "description": "E-mail",
+            "type": "string"
+          },
+          "username": {
+            "description": "Usuário",
+            "type": "string"
+          },
+          "token": {
+            "description": "Bearer token",
+            "type": "string"
+          }
+        }
+      },
+      "ErrorLogin": {
+        "required": [
+        ],
+        "type": "object"
       },
       "NewPlant": {
         "allOf": [

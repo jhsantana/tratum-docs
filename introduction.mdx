@@ -1,71 +1,132 @@
 ---
-title: Introduction
-description: "Welcome to the home of your new documentation"
+title: 'Resumo'
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.png"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.png"
-  alt="Hero Dark"
-/>
+<Info>
+  **Pré requisito**: Nossa API não necessita instalar nenhuma dependência. <br />
+  Importante ter em mãos as credenciais e os ids que serão gerados por nossa equipe. <br />
+  <p>**organizationId** - ID da organização</p>
+  <p>**holderId** - ID do parceiro</p>
+  <p>**planId** - ID do plano. Pode ser recuperado por API</p>
+</Info>
 
-## Setting up
+### Acesso a nossa API
 
-The first step to world-class documentation is setting up your editing environments.
+Nossa API utiliza padrão bearer token para permissão
 
-<CardGroup cols={2}>
-  <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
-  >
-    Get your docs set up locally for easy development
-  </Card>
-  <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
-  >
-    Preview your changes before you push to make sure they're perfect
-  </Card>
-</CardGroup>
+**Etapa 1**: Autenticação:
 
-## Make it yours
+<CodeGroup>
 
-Update your docs to your brand and add valuable content for the best user conversion.
+  ```bash cURL
+    
+    curl --location 'https://search.tratum.com.br/v1/login' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "email": "seu_email",
+        "password": "sua_senha"
+    }'
 
-<CardGroup cols={2}>
-  <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
-  >
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
-  >
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/content/components/accordions"
-  >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+  ```
+
+</CodeGroup>
+
+**Etapa 1.2**: Caso seu token tenha sido expirado, você pode pegar um novo:
+
+```bash cURL
+    
+    curl --location 'https://search.tratum.com.br/v1/refreshtoken' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "email": "seu_email",
+        "username": "seu_username",
+        "refreshToken": "seu_refresh_token"
+    }'
+
+  ```
+
+**Etapa 2**: Consultar os planos disponíveis para sua conta:
+
+```bash cURL
+    
+    curl --location 'https://search.tratum.com.br/v1/holder/{holderId}/organization/{organizationId}/balance' \
+      --header 'Authorization: Bearer ************' \
+      --data ''
+
+  ```
+
+A local preview of your documentation will be available at `http://localhost:3000`.
+
+### Custom Ports
+
+By default, Mintlify uses port 3000. You can customize the port Mintlify runs on by using the `--port` flag. To run Mintlify on port 3333, for instance, use this command:
+
+```bash
+mintlify dev --port 3333
+```
+
+If you attempt to run Mintlify on a port that's already in use, it will use the next available port:
+
+```md
+Port 3000 is already in use. Trying 3001 instead.
+```
+
+## Mintlify Versions
+
+Please note that each CLI release is associated with a specific version of Mintlify. If your local website doesn't align with the production version, please update the CLI:
+
+<CodeGroup>
+
+```bash npm
+npm i -g mintlify@latest
+```
+
+```bash yarn
+yarn global upgrade mintlify
+```
+
+</CodeGroup>
+
+## Validating Links
+
+The CLI can assist with validating reference links made in your documentation. To identify any broken links, use the following command:
+
+```bash
+mintlify broken-links
+```
+
+## Deployment
+
+<Tip>
+  Unlimited editors available under the [Pro
+  Plan](https://mintlify.com/pricing) and above.
+</Tip>
+
+If the deployment is successful, you should see the following:
+
+<Frame>
+  <img src="/images/checks-passed.png" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Code Formatting
+
+We suggest using extensions on your IDE to recognize and format MDX. If you're a VSCode user, consider the [MDX VSCode extension](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx) for syntax highlighting, and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for code formatting.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title='Error: Could not load the "sharp" module using the darwin-arm64 runtime'>
+
+    This may be due to an outdated version of node. Try the following:
+    1. Remove the currently-installed version of mintlify: `npm remove -g mintlify`
+    2. Upgrade to Node v19 or higher.
+    3. Reinstall mintlify: `npm install -g mintlify`
+  </Accordion>
+
+  <Accordion title="Issue: Encountering an unknown error">
+  
+    Solution: Go to the root of your device and delete the \~/.mintlify folder. Afterwards, run `mintlify dev` again.
+  </Accordion>
+</AccordionGroup>
+
+Curious about what changed in the CLI version? [Check out the CLI changelog.](https://www.npmjs.com/package/mintlify?activeTab=versions)
