@@ -268,6 +268,21 @@
       }
     },
     "/v1/holder/{holderId}/organization/{organizationId}/partner/process": {
+      "get": {
+        "description": "New endpoint",
+        "responses": {
+          "200": {
+            "description": "New response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": ""
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "description": "Api para consultar a quantidade de processos de um CPF ou CNPJ",
         "parameters": [
@@ -1285,6 +1300,182 @@
                           "description": "Quantidade de processos de réu com risco"
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organization/{organizationId}/process/{numberProcess}/INACTIVE": {
+      "get": {
+        "description": "API para inativar um processp",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "ID da organização",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "numberProcess",
+            "in": "path",
+            "description": "Numero do processo",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação realizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucess": {
+                      "type": "boolean",
+                      "description": "Indica se a operação foi bem-sucedida",
+                      "example": true
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "Razão de falha, se aplicável",
+                      "example": null
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total de registros processados",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Resultado da operação",
+                      "nullable": true
+                    },
+                    "process": {
+                      "type": "object",
+                      "description": "Informações do processo",
+                      "nullable": true
+                    }
+                  },
+                  "required": ["sucess"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parâmetros inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensagem de erro",
+                      "example": "Parameter processNumber and organizationId are required"
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Tipo do erro",
+                      "example": "WrongParameterException"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensagem de erro de acesso",
+                      "example": "User / Organization - Access Denied"
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Tipo do erro",
+                      "example": "ErrorForbiddenException"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensagem de erro",
+                      "example": "processNumber not exist"
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Tipo do erro",
+                      "example": "ObjectNotFoundException"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensagem de erro de autenticação",
+                      "example": "email required"
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Tipo do erro",
+                      "example": "ObjectNotFoundException"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensagem de erro interno",
+                      "example": "Internal server error"
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Tipo do erro",
+                      "example": "InternalServerError"
                     }
                   }
                 }

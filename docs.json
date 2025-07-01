@@ -29,7 +29,8 @@
           {
             "group": "Módulo Monitoria",
             "pages": [
-              "api-reference/endpoint/consult"
+              "api-reference/endpoint/consult",
+              "api-reference/endpoint/inactive_process"
             ]
           },
           {

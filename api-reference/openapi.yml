@@ -7039,6 +7039,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponsePlan'
+  /v1/organization/{organizationId}/process/{numberProcess}/INACTIVE:
+    put:
+      summary: Inativar um processo da organizacao
+      description: Api para Inativar um processo da organizacao
+      operationId: inactiveProcess
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: numberProcess
+          in: path
+          required: true
+          schema:
+            type: string
+            nullable: false
+      responses:
+        default:
+          description: balance default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBalance'
   /v1/holder/{holderId}/organization/{organizationId}/metric:
     get:
       summary: Agrupar o total de consulta de processos e monitoria
