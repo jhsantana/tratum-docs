@@ -1,0 +1,9 @@
+---
+title: 'Know Your Client'
+openapi: 'GET /v1/organizations/{organizationId}/holder/{holderId}/document/{documentNumber}'
+---
+
+<Info>
+    KYC e Compliance engloba informações necessárias para atender a requisitos regulatórios e/ou legais relacionados com processos de know-your-client. São retornadas tanto informações de pessoas politicamente expostas (PPE ou PEP) quanto sanções e restrições, tanto em um escopo nacional quanto internacional. Além de flags indicando se o indivíduo é PEP ou não e indicando se ele tem alguma restrição associada, mas também os registros históricos dessas situações. Assim, se uma pessoa foi PPE no passado, o flag não vai estar marcado, mas o registro histórico estará presente no retorno e pode ser utilizado em uma análise.
+Além das classificações de PPE tradicionais, trabalhamos também com um conceito de PPE Estendido, que indica se a pessoa é relacionada com algum PPE através de relacionamentos familiares além do 1o grau, ou por outros tipos de relacionamento. O tipo de relacionamento é marcado no retorno da pessoa políticamente exposta. Exemplo: Se o retorno for "mãe" (MOTHER) significa que a entidade buscada é mãe de alguém que é PEP.
+</Info>
