@@ -19,6 +19,7 @@
     }
   ],
   "paths": {
+
     "/v1/login": {
       "post": {
         "description": "Endpoint responsável pela autenticação",
@@ -137,6 +138,8 @@
         }
       }
     },
+
+
     "/v1/holder/{holderId}/organization/{organizationId}/balance": {
       "get": {
         "description": "Listar saldos dos planos disponíveis",
@@ -435,6 +438,8 @@
         }
       }
     },
+
+
     "/v2/analytics": {
       "post": {
         "description": "API para analisar dados associados a um documento específico.",
@@ -1310,8 +1315,8 @@
       }
     },
     "/v1/organization/{organizationId}/process/{numberProcess}/INACTIVE": {
-      "get": {
-        "description": "API para inativar um processp",
+      "put": {
+        "description": "API para inativar um processo",
         "parameters": [
           {
             "name": "organizationId",
@@ -1484,129 +1489,477 @@
           }
         }
       }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+    },
+
+
+    "/v1/organizations/{organizationId}/qsa": {
+              "get": {
+                  "operationId": "getOrganizationQSAByOrganization",
+                  "parameters": [
+                      {
+                          "name": "Authorization",
+                          "in": "header",
+                          "required": true,
+                          "schema": {
+                              "type": "string"
+                          }
+                      },
+                      {
+                          "name": "organizationId",
+                          "in": "path",
+                          "required": true,
+                          "schema": {
+                              "type": "integer",
+                              "format": "int64"
+                          }
+                      }
+                  ],
+                  "responses": {
+                      "default": {
+                          "description": "getOrganizationQSAByOrganization default response",
+                          "content": {
+                              "application/json": {
+                                  "schema": {
+                                      "$ref": "#/components/schemas/ApiResponseDTO"
+                                  }
+                              }
+                          }
+                      }
+                  }
               }
+    },
+    "/v1/organizations/{organizationId}/qsa/{documentNumber}": {
+            "post": {
+                "description": "API responsável por criar e retornar todas relações do QSA do CNPJ.",
+                "operationId": "runQSAByOrganization",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "documentNumber",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "runQSAByOrganization default response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    },
+    "/v1/organizations/{organizationId}/organizationQSA/{organizationQSAId}/relatedEntityTaxIdNumber/{relatedEntityTaxIdNumber}": {
+            "get": {
+                "description": "Obter relações de segundo nível de um outro CNPJ.",
+                "operationId": "getOrganizationQSARelationsChildrens",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "organizationQSAId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "relatedEntityTaxIdNumber",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "getOrganizationQSARelationsChildrens default response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrganizationQSARelationsDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    },
+    "/v1/relationships-parents": {
+            "post": {
+                "description": "Obter relações pessoais por CPF.",
+                "operationId": "getParentRelationship",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                  "description": "Corpo da requisição para consultar relações de parentesco.",
+                  "required": true,
+                  "content": {
+                      "application/json": {
+                          "schema": {
+                              "type": "object",
+                              "properties": {
+                                  "organizationId": {
+                                      "type": "integer",
+                                      "description": "ID da organização."
+                                  },
+                                  "holderId": {
+                                      "type": "integer",
+                                      "description": "ID do parceiro."
+                                  },
+                                  "documentNumber": {
+                                      "type": "string",
+                                      "description": "Número do documento (CPF ou CNPJ)."
+                                  }
+                              },
+                              "required": [
+                                  "organizationId",
+                                  "holderId",
+                                  "documentNumber"
+                              ]
+                          }
+                      }
+                  }
+                },
+                "responses": {
+                    "default": {
+                        "description": "getParentRelationship default response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    },
+    "/v2/analytics/relationshipsParents/{organizationRelationshipParentDetailId}": {
+            "post": {
+                "summary": "Api para analisar os dados de execucao do CPF ou CNPJ nas relacoes dos parentes",
+                "description": "Api para analisar os dados de execucao do CPF ou CNPJ",
+                "operationId": "analyticsRelationshipsParents",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "organizationRelationshipParentDetailId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnalyticsV2Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "default": {
+                        "description": "analyticsRelationshipsParents default response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    },
+
+
+    "/v1/organizations/{organizationId}/holder/{holderId}/organizationQSA/{organizationQSAId}": {
+            "post": {
+                "description": "API para gerar KYC do CNPJ raiz do QSA.",
+                "operationId": "getAnalyticDataByOrganizationQSA",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "holderId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "organizationQSAId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "getAnalyticDataByOrganizationQSA default response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+    "/v1/organizations/{organizationId}/holder/{holderId}/document/{documentNumber}": {
+            "get": {
+                "operationId": "getKYCResponse",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "holderId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "documentNumber",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "getKYCResponse default response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    }
+    
+  },
+  "webhooks":{
+    "/plant/webhook": {
+          "post": {
+            "description": "Information about a new plant added to the store",
+            "requestBody": {
+              "description": "Plant added to the store",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/NewPlant"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Return a 200 status to indicate that the data was received successfully"
+              }
+            }
+          }
+        }
+  },
+  "components": {
+      "schemas": {
+        "Plant": {
+          "required": [
+            "name"
+          ],
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "The name of the plant",
+              "type": "string"
+            },
+            "tag": {
+              "description": "Tag to specify the type",
+              "type": "string"
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "Login": {
-        "required": [
-          "email",
-          "password"
-        ],
-        "type": "object",
-        "properties": {
-          "email": {
-            "description": "E-mail de autenticação",
-            "type": "string"
-          },
-          "password": {
-            "description": "Senha de autenticação",
-            "type": "string"
-          }
-        }
-      },
-      "SuccessLogin": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "description": "E-mail",
-            "type": "string"
-          },
-          "username": {
-            "description": "Usuário",
-            "type": "string"
-          },
-          "token": {
-            "description": "Bearer token",
-            "type": "string"
-          }
-        }
-      },
-      "ErrorLogin": {
-        "required": [
-        ],
-        "type": "object"
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
+        "Login": {
+          "required": [
+            "email",
+            "password"
+          ],
+          "type": "object",
+          "properties": {
+            "email": {
+              "description": "E-mail de autenticação",
+              "type": "string"
+            },
+            "password": {
+              "description": "Senha de autenticação",
+              "type": "string"
             }
           }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
+        },
+        "SuccessLogin": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "description": "E-mail",
+              "type": "string"
+            },
+            "username": {
+              "description": "Usuário",
+              "type": "string"
+            },
+            "token": {
+              "description": "Bearer token",
+              "type": "string"
+            }
+          }
+        },
+        "ErrorLogin": {
+          "required": [
+          ],
+          "type": "object"
+        },
+        "NewPlant": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Plant"
+            },
+            {
+              "required": [
+                "id"
+              ],
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Identification number of the plant",
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          ]
+        },
+        "Error": {
+          "required": [
+            "error",
+            "message"
+          ],
+          "type": "object",
+          "properties": {
+            "error": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "message": {
+              "type": "string"
+            }
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      },
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer"
+        }
       }
     }
-  }
 }
