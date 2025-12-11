@@ -8,6 +8,7 @@
     "dark": "#15803D"
   },
   "favicon": "/favicon.ico",
+
   "navigation": {
     "tabs": [
       {
@@ -41,6 +42,28 @@
               "api-reference/endpoint/consult-analytics",
               "api-reference/endpoint/activities",
               "api-reference/endpoint/detail"
+            ]
+          },
+          {
+            "group": "Webhook",
+            "pages": [
+              "api-reference/endpoint/webhook"
+            ]
+          },
+          {
+            "group": "Quadro de Sócios e Administradores (QSA)",
+            "pages": [
+              "api-reference/endpoint/qsa_document",
+              "api-reference/endpoint/qsa_cnpj_related",
+              "api-reference/endpoint/qsa_relationships_parents",
+              "api-reference/endpoint/qsa_parent_detail"
+            ]
+          },
+          {
+            "group": "Know Your Client (KYC)",
+            "pages": [
+              "api-reference/endpoint/kyc",
+              "api-reference/endpoint/kyc_qsa_primary"
             ]
           }
         ]
