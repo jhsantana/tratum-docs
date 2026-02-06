@@ -87,13 +87,6 @@ paths:
       description: Cria uma nova solicitação de CNH e envia para a fila de processamento
         assíncrono
       operationId: issuer
-      parameters:
-      - name: Authorization
-        in: header
-        required: false
-        schema:
-          type: string
-          nullable: true
       requestBody:
         content:
           application/json:
@@ -168,12 +161,6 @@ paths:
         schema:
           type: integer
           format: int64
-      - name: Authorization
-        in: header
-        required: false
-        schema:
-          type: string
-          nullable: true
       responses:
         "200":
           description: CNH encontrada com sucesso
@@ -189,12 +176,6 @@ paths:
       description: Api para Cadastrar um novo campo customizado na Organizacao
       operationId: addCustomFields
       parameters:
-      - name: Authorization
-        in: header
-        required: false
-        schema:
-          type: string
-          nullable: true
       - name: organizationId
         in: path
         required: true
