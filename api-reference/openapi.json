@@ -1837,6 +1837,156 @@
                     }
                 }
             }
+    },
+    "/v1/cnh": {
+      "post": {
+        "tags": ["CNH"],
+        "summary": "Criar solicitação de CNH",
+        "description": "Cria uma nova solicitação de CNH e envia para a fila de processamento assíncrono",
+        "operationId": "issuer",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": ["string", "null"]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CnhSolicitacaoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Solicitação criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CnhResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos na requisição"
+          },
+          "500": {
+            "description": "Erro interno ao processar solicitação"
+          }
+        }
+      }
+    },
+    "/v1/cnh/organizations/{organizationId}/document/{document}": {
+      "get": {
+        "tags": ["CNH"],
+        "summary": "Buscar CNH mais recente por CPF",
+        "description": "Retorna a CNH mais recente cadastrada para um determinado CPF",
+        "operationId": "findLatestByDocument",
+        "parameters": [
+          {
+            "name": "document",
+            "in": "path",
+            "description": "CPF do titular da CNH",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "ID da organização",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": ["string", "null"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CNH encontrada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CnhResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nenhuma CNH encontrada para o CPF informado"
+          }
+        }
+      }
+    },
+    "/v1/cnh/organizations/{organizationId}/request/{requestId}": {
+      "get": {
+        "tags": ["CNH"],
+        "summary": "Buscar CNH por requestId",
+        "description": "Retorna a CNH cadastrada para um determinado requestId",
+        "operationId": "findByRequestId",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "description": "RequestId da solicitação",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "ID da organização",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": ["string", "null"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CNH encontrada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CnhResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nenhuma CNH encontrada para o requestId informado"
+          }
+        }
+      }
     }
     
   },
@@ -1952,6 +2102,58 @@
             },
             "message": {
               "type": "string"
+            }
+          }
+        },
+        "CnhSolicitacaoRequest": {
+          "type": "object",
+          "description": "Payload para criar uma solicitação de CNH (processamento assíncrono).",
+          "properties": {
+            "organizationId": {
+              "type": "integer",
+              "format": "int64",
+              "description": "ID da organização."
+            },
+            "document": {
+              "type": "string",
+              "description": "CPF do titular da CNH."
+            }
+          },
+          "required": ["organizationId", "document"]
+        },
+        "CnhResponse": {
+          "type": "object",
+          "description": "Retorno de uma CNH (ou status do processamento).",
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "description": "Identificador da solicitação."
+            },
+            "organizationId": {
+              "type": "integer",
+              "format": "int64",
+              "description": "ID da organização."
+            },
+            "document": {
+              "type": "string",
+              "description": "CPF do titular da CNH."
+            },
+            "status": {
+              "type": "string",
+              "description": "Status do processamento/retorno."
+            },
+            "data": {
+              "type": ["object", "null"],
+              "description": "Dados da CNH, quando disponíveis.",
+              "additionalProperties": true
+            },
+            "createdAt": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": ["string", "null"],
+              "format": "date-time"
             }
           }
         }

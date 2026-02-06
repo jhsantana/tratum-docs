@@ -65,6 +65,14 @@
               "api-reference/endpoint/kyc",
               "api-reference/endpoint/kyc_qsa_primary"
             ]
+          },
+          {
+            "group": "CNH",
+            "pages": [
+              "api-reference/endpoint/cnh_create",
+              "api-reference/endpoint/cnh_latest_by_document",
+              "api-reference/endpoint/cnh_find_by_request"
+            ]
           }
         ]
       }
