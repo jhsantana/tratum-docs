@@ -1844,16 +1844,6 @@
         "summary": "Criar solicitação de CNH",
         "description": "Cria uma nova solicitação de CNH e envia para a fila de processamento assíncrono",
         "operationId": "issuer",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": ["string", "null"]
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1909,14 +1899,6 @@
               "type": "integer",
               "format": "int64"
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": ["string", "null"]
-            }
           }
         ],
         "responses": {
@@ -1960,14 +1942,6 @@
             "schema": {
               "type": "integer",
               "format": "int64"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": ["string", "null"]
             }
           }
         ],
