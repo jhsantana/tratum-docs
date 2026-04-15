@@ -1,16 +1,16 @@
 ---
 title: 'Visão geral — Procrédito (SCR)'
-description: 'Consultas ao SCR via TruVision (process-api): autenticação, planId e produtos disponíveis.'
+description: 'Consultas ao SCR (process-api): autenticação, planId e produtos disponíveis.'
 ---
 
 <Info>
-  As rotas **`/v1/scr/**`** fazem parte do **process-api** e expõem consultas ao **SCR** através da integração **Procrédito (TruVision)**.
+  As rotas **`/v1/scr/**`** fazem parte do **process-api** e expõem consultas ao **SCR** através da integração **Procrédito**.
   É obrigatório enviar o **`planId`** do plano da sua organização e um **token Bearer** válido (mesmo fluxo de login das demais APIs Tratum).
 </Info>
 
 ### O que este módulo faz
 
-- Consulta dados de crédito (SCR) em diferentes **produtos** TruVision: relatório completo, indicadores, atributos, algoritmos e score.
+- Consulta dados de crédito (SCR) em diferentes **modalidades**: relatório completo, indicadores, atributos, algoritmos e score.
 - O backend valida se o **plano** informado pertence à **organização** à qual o usuário autenticado tem acesso e se o plano tem **SCR habilitado** (`scrEnabled`).
 - Quando não há resultado em cache, a consulta é **enfileirada** e a API responde **202 Accepted** com status `PROCESSING`.
 
@@ -35,4 +35,4 @@ Utilize o mesmo host do **process-api** configurado para o seu ambiente (ex.: ho
 
 ### Endpoints
 
-Consulte as páginas seguintes deste grupo para cada produto TruVision e para testar no playground OpenAPI.
+Consulte as páginas seguintes deste grupo para cada modalidade de consulta e para testar no playground OpenAPI.

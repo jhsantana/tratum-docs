@@ -11724,9 +11724,9 @@ paths:
     get:
       tags:
       - Procrédito (SCR)
-      summary: Relatório completo (TruVision / SCR)
+      summary: Relatório completo (SCR)
       description: |
-        Consulta ao SCR via integração Procrédito (TruVision) — produto **relatório completo**.
+        Consulta ao SCR via integração Procrédito — produto **relatório completo**.
         Requer **Bearer token** e query **`planId`**. O plano deve ter SCR habilitado e o usuário autenticado deve pertencer à **organização dona do plano**.
       operationId: scrConsultFullReport
       parameters:
@@ -11770,7 +11770,7 @@ paths:
     get:
       tags:
       - Procrédito (SCR)
-      summary: Indicadores (TruVision / SCR)
+      summary: Indicadores (SCR)
       description: Consulta SCR — produto indicadores. Mesmas regras de autenticação e planId que o relatório completo.
       operationId: scrConsultIndicators
       parameters:
@@ -11810,7 +11810,7 @@ paths:
     get:
       tags:
       - Procrédito (SCR)
-      summary: Atributos (TruVision / SCR)
+      summary: Atributos (SCR)
       description: Consulta SCR — produto atributos.
       operationId: scrConsultAttributes
       parameters:
@@ -11850,7 +11850,7 @@ paths:
     get:
       tags:
       - Procrédito (SCR)
-      summary: Algoritmos (TruVision / SCR)
+      summary: Algoritmos (SCR)
       description: Consulta SCR — produto algoritmos.
       operationId: scrConsultAlgorithms
       parameters:
@@ -11890,7 +11890,7 @@ paths:
     get:
       tags:
       - Procrédito (SCR)
-      summary: Score (TruVision / SCR)
+      summary: Score (SCR)
       description: Consulta SCR — produto score.
       operationId: scrConsultScore
       parameters:

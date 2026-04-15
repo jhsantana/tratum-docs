@@ -1965,8 +1965,8 @@
     "/v1/scr/full/{document}": {
       "get": {
         "tags": ["Procrédito (SCR)"],
-        "summary": "Relatório completo (TruVision / SCR)",
-        "description": "Consulta ao SCR via integração Procrédito (TruVision) — produto relatório completo. Requer Bearer token e query planId. O plano deve ter SCR habilitado e o usuário deve pertencer à organização dona do plano.",
+        "summary": "Relatório completo (SCR)",
+        "description": "Consulta ao SCR via integração Procrédito — produto relatório completo. Requer Bearer token e query planId. O plano deve ter SCR habilitado e o usuário deve pertencer à organização dona do plano.",
         "operationId": "scrConsultFullReport",
         "parameters": [
           {
@@ -2015,7 +2015,7 @@
     "/v1/scr/indicators/{document}": {
       "get": {
         "tags": ["Procrédito (SCR)"],
-        "summary": "Indicadores (TruVision / SCR)",
+        "summary": "Indicadores (SCR)",
         "description": "Consulta SCR — produto indicadores.",
         "operationId": "scrConsultIndicators",
         "parameters": [
@@ -2034,7 +2034,7 @@
     "/v1/scr/attributes/{document}": {
       "get": {
         "tags": ["Procrédito (SCR)"],
-        "summary": "Atributos (TruVision / SCR)",
+        "summary": "Atributos (SCR)",
         "operationId": "scrConsultAttributes",
         "parameters": [
           { "name": "Authorization", "in": "header", "required": false, "schema": { "type": "string", "nullable": true } },
@@ -2052,7 +2052,7 @@
     "/v1/scr/algorithms/{document}": {
       "get": {
         "tags": ["Procrédito (SCR)"],
-        "summary": "Algoritmos (TruVision / SCR)",
+        "summary": "Algoritmos (SCR)",
         "operationId": "scrConsultAlgorithms",
         "parameters": [
           { "name": "Authorization", "in": "header", "required": false, "schema": { "type": "string", "nullable": true } },
@@ -2070,7 +2070,7 @@
     "/v1/scr/score/{document}": {
       "get": {
         "tags": ["Procrédito (SCR)"],
-        "summary": "Score (TruVision / SCR)",
+        "summary": "Score (SCR)",
         "operationId": "scrConsultScore",
         "parameters": [
           { "name": "Authorization", "in": "header", "required": false, "schema": { "type": "string", "nullable": true } },
