@@ -2024,8 +2024,14 @@
           { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
         ],
         "responses": {
-          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
-          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "200": {
+            "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+          },
+          "202": {
+            "description": "Consulta enfileirada",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
+          },
           "400": { "description": "Documento inválido" },
           "403": { "description": "Acesso negado" }
         }
@@ -2042,8 +2048,14 @@
           { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
         ],
         "responses": {
-          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
-          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "200": {
+            "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+          },
+          "202": {
+            "description": "Consulta enfileirada",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
+          },
           "400": { "description": "Documento inválido" },
           "403": { "description": "Acesso negado" }
         }
@@ -2060,8 +2072,14 @@
           { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
         ],
         "responses": {
-          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
-          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "200": {
+            "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+          },
+          "202": {
+            "description": "Consulta enfileirada",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
+          },
           "400": { "description": "Documento inválido" },
           "403": { "description": "Acesso negado" }
         }
@@ -2078,8 +2096,14 @@
           { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
         ],
         "responses": {
-          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
-          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "200": {
+            "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+          },
+          "202": {
+            "description": "Consulta enfileirada",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
+          },
           "400": { "description": "Documento inválido" },
           "403": { "description": "Acesso negado" }
         }
