@@ -2328,7 +2328,7 @@
         },
         "ScrResponseSuccessCached": {
           "type": "object",
-          "description": "HTTP 200 com resultado anterior em cache (`findCachedResult` + `cachedResponse`). `data` vem do parse de `TruVisionConsultHistory.jsonPartner` quando existir.",
+          "description": "HTTP 200 com resultado anterior em cache. O campo `data`, quando presente, reflete o payload JSON da última consulta bem-sucedida junto ao provedor SCR.",
           "required": ["status", "source"],
           "properties": {
             "status": {
@@ -2342,18 +2342,18 @@
             "data": {
               "type": "object",
               "additionalProperties": true,
-              "description": "Payload JSON retornado pelo parceiro (TruVision), quando `jsonPartner` estava preenchido."
+              "description": "Payload JSON retornado pelo provedor da consulta SCR, quando a última execução persistiu corpo de resposta."
             },
             "score": {
               "type": "integer",
               "format": "int32",
               "nullable": true,
-              "description": "`TruVisionConsultHistory.truVisionScore`"
+              "description": "Pontuação associada ao resultado em cache (quando aplicável)."
             },
             "classification": {
               "type": "string",
               "nullable": true,
-              "description": "`TruVisionConsultHistory.truVisionScoreClassification`"
+              "description": "Classificação da pontuação no resultado em cache (quando aplicável)."
             },
             "source": {
               "type": "string",
