@@ -1995,7 +1995,7 @@
             "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ScrConsultResponse" }
+                "schema": { "$ref": "#/components/schemas/ScrConsultResponse200" }
               }
             }
           },
@@ -2007,8 +2007,22 @@
               }
             }
           },
-          "400": { "description": "Documento inválido" },
-          "403": { "description": "Sem acesso à organização do plano" }
+          "400": {
+            "description": "CPF/CNPJ inválido após normalizar (não possui 11 nem 14 dígitos)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrInvalidDocument" }
+              }
+            }
+          },
+          "403": {
+            "description": "Usuário sem acesso à organização do plano (ErrorForbiddenException / UserOrganizationService)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrForbidden" }
+              }
+            }
+          }
         }
       }
     },
@@ -2026,14 +2040,28 @@
         "responses": {
           "200": {
             "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse200" } } }
           },
           "202": {
             "description": "Consulta enfileirada",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
           },
-          "400": { "description": "Documento inválido" },
-          "403": { "description": "Acesso negado" }
+          "400": {
+            "description": "CPF/CNPJ inválido após normalizar (não possui 11 nem 14 dígitos)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrInvalidDocument" }
+              }
+            }
+          },
+          "403": {
+            "description": "Usuário sem acesso à organização do plano (ErrorForbiddenException)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrForbidden" }
+              }
+            }
+          }
         }
       }
     },
@@ -2050,14 +2078,28 @@
         "responses": {
           "200": {
             "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse200" } } }
           },
           "202": {
             "description": "Consulta enfileirada",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
           },
-          "400": { "description": "Documento inválido" },
-          "403": { "description": "Acesso negado" }
+          "400": {
+            "description": "CPF/CNPJ inválido após normalizar (não possui 11 nem 14 dígitos)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrInvalidDocument" }
+              }
+            }
+          },
+          "403": {
+            "description": "Usuário sem acesso à organização do plano (ErrorForbiddenException)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrForbidden" }
+              }
+            }
+          }
         }
       }
     },
@@ -2074,14 +2116,28 @@
         "responses": {
           "200": {
             "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse200" } } }
           },
           "202": {
             "description": "Consulta enfileirada",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
           },
-          "400": { "description": "Documento inválido" },
-          "403": { "description": "Acesso negado" }
+          "400": {
+            "description": "CPF/CNPJ inválido após normalizar (não possui 11 nem 14 dígitos)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrInvalidDocument" }
+              }
+            }
+          },
+          "403": {
+            "description": "Usuário sem acesso à organização do plano (ErrorForbiddenException)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrForbidden" }
+              }
+            }
+          }
         }
       }
     },
@@ -2098,14 +2154,28 @@
         "responses": {
           "200": {
             "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse200" } } }
           },
           "202": {
             "description": "Consulta enfileirada",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } }
           },
-          "400": { "description": "Documento inválido" },
-          "403": { "description": "Acesso negado" }
+          "400": {
+            "description": "CPF/CNPJ inválido após normalizar (não possui 11 nem 14 dígitos)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrInvalidDocument" }
+              }
+            }
+          },
+          "403": {
+            "description": "Usuário sem acesso à organização do plano (ErrorForbiddenException)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrForbidden" }
+              }
+            }
+          }
         }
       }
     }
@@ -2227,16 +2297,104 @@
         },
         "ScrConsultAccepted": {
           "type": "object",
-          "description": "Consulta enfileirada para processamento",
+          "description": "HTTP 202 — consulta aceita e enviada à fila SQS (`ScrController.publishToSqs` / `acceptedResponse`).",
+          "required": ["status", "message"],
           "properties": {
-            "status": { "type": "string", "example": "PROCESSING" },
-            "message": { "type": "string", "example": "A consulta está sendo processada." }
+            "status": {
+              "type": "string",
+              "enum": ["PROCESSING"],
+              "description": "Status fixo ao enfileirar."
+            },
+            "message": {
+              "type": "string",
+              "example": "A consulta está sendo processada."
+            }
           }
         },
-        "ScrConsultResponse": {
+        "ScrResponsePlanNotAllowed": {
           "type": "object",
-          "description": "Resposta variável: cache, SUCCESS, PLAN_NOT_ALLOWED, etc.",
-          "additionalProperties": true
+          "description": "HTTP 200 quando o plano não tem SCR habilitado (`resolvePlanContext` / `planNotAllowed`).",
+          "required": ["status", "message"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["PLAN_NOT_ALLOWED"]
+            },
+            "message": {
+              "type": "string",
+              "example": "Seu plano não permite acesso a este recurso"
+            }
+          }
+        },
+        "ScrResponseSuccessCached": {
+          "type": "object",
+          "description": "HTTP 200 com resultado anterior em cache (`findCachedResult` + `cachedResponse`). `data` vem do parse de `TruVisionConsultHistory.jsonPartner` quando existir.",
+          "required": ["status", "source"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["SUCCESS"]
+            },
+            "document": {
+              "type": "string",
+              "description": "Documento (somente dígitos), alinhado ao cache."
+            },
+            "data": {
+              "type": "object",
+              "additionalProperties": true,
+              "description": "Payload JSON retornado pelo parceiro (TruVision), quando `jsonPartner` estava preenchido."
+            },
+            "score": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true,
+              "description": "`TruVisionConsultHistory.truVisionScore`"
+            },
+            "classification": {
+              "type": "string",
+              "nullable": true,
+              "description": "`TruVisionConsultHistory.truVisionScoreClassification`"
+            },
+            "source": {
+              "type": "string",
+              "enum": ["cache"],
+              "description": "Indica leitura do histórico local em vez de nova consulta."
+            }
+          }
+        },
+        "ScrConsultResponse200": {
+          "description": "HTTP 200: ou bloqueio por plano (`PLAN_NOT_ALLOWED`), ou sucesso a partir do cache (`SUCCESS` + `source: cache`).",
+          "oneOf": [
+            { "$ref": "#/components/schemas/ScrResponsePlanNotAllowed" },
+            { "$ref": "#/components/schemas/ScrResponseSuccessCached" }
+          ]
+        },
+        "ScrInvalidDocument": {
+          "type": "object",
+          "description": "HTTP 400 — documento com quantidade de dígitos inválida após remover máscara (`documentValidationError`).",
+          "required": ["status", "message"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["INVALID_DOCUMENT"]
+            },
+            "message": {
+              "type": "string",
+              "description": "Ex.: esperado CPF (11) ou CNPJ (14 dígitos)."
+            }
+          }
+        },
+        "ScrForbidden": {
+          "type": "object",
+          "description": "HTTP 403 — `ErrorForbiddenException` tratada por `GlobalExceptionHandler` (ex.: usuário sem vínculo com a organização do plano). Campos podem vir nulos no corpo; a mensagem textual pode constar no status line.",
+          "properties": {
+            "type": {
+              "type": ["string", "null"]
+            },
+            "message": {
+              "type": ["string", "null"]
+            }
+          }
         },
         "CnhSolicitacaoRequest": {
           "type": "object",
