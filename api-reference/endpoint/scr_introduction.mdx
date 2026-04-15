@@ -1,0 +1,38 @@
+---
+title: 'Visão geral — Procrédito (SCR)'
+description: 'Consultas ao SCR via TruVision (process-api): autenticação, planId e produtos disponíveis.'
+---
+
+<Info>
+  As rotas **`/v1/scr/**`** fazem parte do **process-api** e expõem consultas ao **SCR** através da integração **Procrédito (TruVision)**.
+  É obrigatório enviar o **`planId`** do plano da sua organização e um **token Bearer** válido (mesmo fluxo de login das demais APIs Tratum).
+</Info>
+
+### O que este módulo faz
+
+- Consulta dados de crédito (SCR) em diferentes **produtos** TruVision: relatório completo, indicadores, atributos, algoritmos e score.
+- O backend valida se o **plano** informado pertence à **organização** à qual o usuário autenticado tem acesso e se o plano tem **SCR habilitado** (`scrEnabled`).
+- Quando não há resultado em cache, a consulta é **enfileirada** e a API responde **202 Accepted** com status `PROCESSING`.
+
+### Pré-requisitos
+
+| Item | Descrição |
+|------|-----------|
+| **Autenticação** | Header `Authorization: Bearer` seguido do token JWT (usuário deve existir na base e estar vinculado à organização) |
+| **planId** | ID do plano obtido pelas APIs de **saldo/planos** da sua organização (ex.: balance / activities) |
+| **Documento** | CPF (11 dígitos) ou CNPJ (14) no path `{document}` |
+
+### Base URL
+
+Utilize o mesmo host do **process-api** configurado para o seu ambiente (ex.: homologação ou produção). O prefixo das rotas é sempre **`/v1/scr`**.
+
+### Respostas comuns
+
+- **200** — Corpo JSON pode ser cache (`source: cache`), sucesso com dados, ou `status: PLAN_NOT_ALLOWED` se o plano não permite SCR.
+- **202** — `status: PROCESSING` — consulta aceita e enviada à fila.
+- **400** — Documento inválido (`INVALID_DOCUMENT`).
+- **403** — Usuário sem permissão para a organização do plano ou recurso negado.
+
+### Endpoints
+
+Consulte as páginas seguintes deste grupo para cada produto TruVision e para testar no playground OpenAPI.

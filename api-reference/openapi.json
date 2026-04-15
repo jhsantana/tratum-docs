@@ -1961,8 +1961,130 @@
           }
         }
       }
+    },
+    "/v1/scr/full/{document}": {
+      "get": {
+        "tags": ["Procrédito (SCR)"],
+        "summary": "Relatório completo (TruVision / SCR)",
+        "description": "Consulta ao SCR via integração Procrédito (TruVision) — produto relatório completo. Requer Bearer token e query planId. O plano deve ter SCR habilitado e o usuário deve pertencer à organização dona do plano.",
+        "operationId": "scrConsultFullReport",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "nullable": true }
+          },
+          {
+            "name": "document",
+            "in": "path",
+            "required": true,
+            "description": "CPF (11 dígitos) ou CNPJ (14), com ou sem máscara",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "planId",
+            "in": "query",
+            "required": true,
+            "description": "ID do plano (obtido pelas APIs de plano/saldo)",
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cache, plano sem permissão SCR, ou corpo de sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrConsultResponse" }
+              }
+            }
+          },
+          "202": {
+            "description": "Consulta enfileirada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" }
+              }
+            }
+          },
+          "400": { "description": "Documento inválido" },
+          "403": { "description": "Sem acesso à organização do plano" }
+        }
+      }
+    },
+    "/v1/scr/indicators/{document}": {
+      "get": {
+        "tags": ["Procrédito (SCR)"],
+        "summary": "Indicadores (TruVision / SCR)",
+        "description": "Consulta SCR — produto indicadores.",
+        "operationId": "scrConsultIndicators",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "required": false, "schema": { "type": "string", "nullable": true } },
+          { "name": "document", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
+        ],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
+          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "400": { "description": "Documento inválido" },
+          "403": { "description": "Acesso negado" }
+        }
+      }
+    },
+    "/v1/scr/attributes/{document}": {
+      "get": {
+        "tags": ["Procrédito (SCR)"],
+        "summary": "Atributos (TruVision / SCR)",
+        "operationId": "scrConsultAttributes",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "required": false, "schema": { "type": "string", "nullable": true } },
+          { "name": "document", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
+        ],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
+          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "400": { "description": "Documento inválido" },
+          "403": { "description": "Acesso negado" }
+        }
+      }
+    },
+    "/v1/scr/algorithms/{document}": {
+      "get": {
+        "tags": ["Procrédito (SCR)"],
+        "summary": "Algoritmos (TruVision / SCR)",
+        "operationId": "scrConsultAlgorithms",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "required": false, "schema": { "type": "string", "nullable": true } },
+          { "name": "document", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
+        ],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
+          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "400": { "description": "Documento inválido" },
+          "403": { "description": "Acesso negado" }
+        }
+      }
+    },
+    "/v1/scr/score/{document}": {
+      "get": {
+        "tags": ["Procrédito (SCR)"],
+        "summary": "Score (TruVision / SCR)",
+        "operationId": "scrConsultScore",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "required": false, "schema": { "type": "string", "nullable": true } },
+          { "name": "document", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "planId", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }
+        ],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultResponse" } } } },
+          "202": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScrConsultAccepted" } } } },
+          "400": { "description": "Documento inválido" },
+          "403": { "description": "Acesso negado" }
+        }
+      }
     }
-    
   },
   "webhooks":{
     "/plant/webhook": {
@@ -2078,6 +2200,19 @@
               "type": "string"
             }
           }
+        },
+        "ScrConsultAccepted": {
+          "type": "object",
+          "description": "Consulta enfileirada para processamento",
+          "properties": {
+            "status": { "type": "string", "example": "PROCESSING" },
+            "message": { "type": "string", "example": "A consulta está sendo processada." }
+          }
+        },
+        "ScrConsultResponse": {
+          "type": "object",
+          "description": "Resposta variável: cache, SUCCESS, PLAN_NOT_ALLOWED, etc.",
+          "additionalProperties": true
         },
         "CnhSolicitacaoRequest": {
           "type": "object",

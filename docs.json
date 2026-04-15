@@ -73,6 +73,17 @@
               "api-reference/endpoint/cnh_latest_by_document",
               "api-reference/endpoint/cnh_find_by_request"
             ]
+          },
+          {
+            "group": "Procrédito (SCR)",
+            "pages": [
+              "api-reference/endpoint/scr_introduction",
+              "api-reference/endpoint/scr_full",
+              "api-reference/endpoint/scr_indicators",
+              "api-reference/endpoint/scr_attributes",
+              "api-reference/endpoint/scr_algorithms",
+              "api-reference/endpoint/scr_score"
+            ]
           }
         ]
       }
