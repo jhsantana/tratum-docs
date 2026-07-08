@@ -2178,8 +2178,269 @@
           }
         }
       }
+    },
+
+    "/v1/process/{organizationId}/{processNumber}": {
+      "get": {
+        "operationId": "getProcessByOrganization",
+        "summary": "Obtém os detalhes de um processo",
+        "description": "Retorna as informações detalhadas de um processo pertencente a uma organização.",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "processNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resourceId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do processo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "$ref": "#/components/schemas/ProcessResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Processo não encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+
+    "/v1/organization/{organizationId}/radar": {
+    "post": {
+      "operationId": "addRadar",
+      "summary": "Adiciona radar à organização",
+      "description": "Cadastra um radar validando usuário e organização",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "description": "ID da organização",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RadarDTO"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Radar cadastrado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadarDTO"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Usuário sem acesso à organização"
+        },
+        "404": {
+          "description": "Usuário ou organização não encontrado"
+        }
+      },
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ]
     }
   },
+
+  "/v1/organization/{organizationId}/process": {
+    "post": {
+      "operationId": "addProcess",
+      "summary": "Cadastra processo em um radar",
+      "description": "Cadastra um processo validando usuário e organização",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProcessRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Processo cadastrado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessRequest"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Usuário sem acesso à organização"
+        },
+        "404": {
+          "description": "Usuário ou organização não encontrado"
+        }
+      },
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ]
+    }
+  },
+
+  "/v2/organizations/{organizationId}/radars": {
+    "get": {
+      "operationId": "getRadars",
+      "summary": "Lista os radares pertencentes à organização",
+      "description": "Retorna uma lista paginada de radares associados à organização.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        {
+          "name": "_start",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0
+          }
+        },
+        {
+          "name": "_end",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 10
+          }
+        },
+        {
+          "name": "_sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "id"
+          }
+        },
+        {
+          "name": "_order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ASC",
+              "DESC",
+              "asc",
+              "desc"
+            ],
+            "default": "DESC"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista de radares",
+          "headers": {
+            "x-total-count": {
+              "description": "Quantidade total de registros",
+              "schema": {
+                "type": "integer"
+              }
+            }
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RadarDTO"
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Usuário sem acesso à organização"
+        },
+        "404": {
+          "description": "Usuário ou organização não encontrado"
+        }
+      },
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ]
+    }
+  }
+  
+  
+  },
+
+
   "webhooks":{
     "/plant/webhook": {
           "post": {
@@ -2447,13 +2708,271 @@
               "format": "date-time"
             }
           }
+        },
+
+        "ProcessResponse": {
+        "type": "object",
+        "properties": {
+          "process": {
+            "type": "string"
+          },
+          "process_id": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "court": {
+            "type": "string"
+          },
+          "court_name": {
+            "type": "string"
+          },
+          "classe": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "status_custom": {
+            "type": "string"
+          },
+          "distribution_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_update": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_update_message": {
+            "type": "string"
+          },
+          "value_claim": {
+            "type": "number"
+          },
+          "value_claim_str": {
+            "type": "string"
+          },
+          "authors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Party"
+            }
+          },
+          "defendants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Party"
+            }
+          },
+          "person_custom": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonCustom"
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Document"
+            }
+          },
+          "part_matches": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
         }
       },
+      "Party": {
+        "type": "object",
+        "properties": {
+          "name_author": {
+            "type": "string"
+          },
+          "document": {
+            "type": "string"
+          },
+          "representatives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Representative"
+            }
+          }
+        }
+      },
+      "Representative": {
+        "type": "object",
+        "properties": {
+          "name_author": {
+            "type": "string"
+          },
+          "document": {
+            "type": "string"
+          }
+        }
+      },
+      "PersonCustom": {
+        "type": "object",
+        "properties": {
+          "name_person": {
+            "type": "string"
+          },
+          "function_person": {
+            "type": "string"
+          }
+        }
+      },
+      "Document": {
+        "type": "object",
+        "properties": {
+          "moviment_id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "document_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "file": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "type_upload_file": {
+            "type": "string"
+          },
+          "has_session": {
+            "type": "boolean"
+          },
+          "problem_file": {
+            "type": "boolean"
+          }
+        }
+      },
+
+      "RadarDTO": {
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "code"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do radar"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do radar",
+            "enum": [
+              "CPF",
+              "CNPJ",
+              "OAB_NUMBER",
+              "PROCESS"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "description": "Código monitorado pelo radar"
+          },
+          "listTribunals": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Tribunal"
+            }
+          },
+          "countProcesses": {
+            "type": "integer",
+            "nullable": true
+          },
+          "typeCustomer": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Tribunal": {
+        "type": "object",
+        "properties": {
+          "court": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "availableProcess": {
+            "type": "boolean"
+          },
+          "activeNewProcesses": {
+            "type": "boolean"
+          },
+          "availableFile": {
+            "type": "boolean"
+          },
+          "projectIdNewProcesses": {
+            "type": "string"
+          },
+          "projectIdDetails": {
+            "type": "string"
+          },
+          "uf": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      
+    "ProcessRequest": {
+        "type": "object",
+        "required": [
+          "number",
+          "radarId"
+        ],
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "Número do processo"
+          },
+          "radarId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "ID do radar ao qual o processo será associado"
+          }
+        }
+      }  
+    
+    },
       "securitySchemes": {
         "bearerAuth": {
           "type": "http",
           "scheme": "bearer"
         }
       }
+    
     }
 }
