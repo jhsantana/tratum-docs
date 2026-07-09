@@ -2237,7 +2237,7 @@
       }
     },
 
-    "/v1/organization/{organizationId}/radar": {
+    "/v1/external/organization/{organizationId}/radar": {
     "post": {
       "operationId": "addRadar",
       "summary": "Adiciona radar à organização",
