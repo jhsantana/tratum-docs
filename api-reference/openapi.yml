@@ -2343,6 +2343,7 @@ paths:
         required: true
       responses:
         "200":
+          description: Successo
           content:
             application/json:
               schema:
@@ -5797,7 +5798,6 @@ paths:
         required: true
         schema:
           type: string
-      requestBody: {}
       responses:
         default:
           description: getParentRelationship default response
@@ -9329,6 +9329,7 @@ paths:
         required: true
       responses:
         "200":
+          description: Successo
           content:
             application/json:
               schema:
@@ -11793,11 +11794,13 @@ paths:
           format: int64
       responses:
         "200":
+          description: Successo
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScrConsultResponse'
         "202":
+          description: Successo
           content:
             application/json:
               schema:
@@ -11833,11 +11836,13 @@ paths:
           format: int64
       responses:
         "200":
+          description: Successo
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScrConsultResponse'
         "202":
+          description: Successo
           content:
             application/json:
               schema:
@@ -11873,11 +11878,13 @@ paths:
           format: int64
       responses:
         "200":
+          description: Successo
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScrConsultResponse'
         "202":
+          description: Successo
           content:
             application/json:
               schema:
@@ -11913,11 +11920,13 @@ paths:
           format: int64
       responses:
         "200":
+          description: Successo
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScrConsultResponse'
         "202":
+          description: Successo
           content:
             application/json:
               schema:

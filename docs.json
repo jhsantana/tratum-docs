@@ -31,7 +31,11 @@
             "group": "Módulo Monitoria",
             "pages": [
               "api-reference/endpoint/consult",
-              "api-reference/endpoint/inactive_process"
+              "api-reference/endpoint/inactive_process",
+              "api-reference/endpoint/get_process_details",
+              "api-reference/endpoint/add_radar",
+              "api-reference/endpoint/add_process_radar",
+              "api-reference/endpoint/get_radars"
             ]
           },
           {
