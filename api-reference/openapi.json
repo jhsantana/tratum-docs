@@ -2237,7 +2237,7 @@
       }
     },
 
-    "/v1/external/organization/{organizationId}/radar": {
+    "/v1/organization/{organizationId}/radar": {
     "post": {
       "operationId": "addRadar",
       "summary": "Adiciona radar à organização",
@@ -2259,7 +2259,23 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/RadarDTO"
+              "type": "object",
+              "required": [
+                "name",
+                "code",
+                "type"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -2270,7 +2286,23 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RadarDTO"
+                "type": "object",
+                "required": [
+                  "name",
+                  "code",
+                  "type"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
               }
             }
           }
@@ -2416,8 +2448,76 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/RadarDTO"
-                }
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "radar": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "format": "int64"
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "CPF",
+                            "CNPJ",
+                            "OAB_NUMBER",
+                            "PROCESS"
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "integer",
+                          "format": "int64",
+                          "description": "Data de criação em epoch millis"
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "preProcessedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "typeCustomer": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    },
+                    "createdAt": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "Data de criação em epoch millis"
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": 1001,
+                    "radar": {
+                      "id": 2001,
+                      "code": "100_11122233344",
+                      "name": "Radar Exemplo",
+                      "type": "CPF",
+                      "createdAt": 1700000000000,
+                      "active": true,
+                      "preProcessedAt": "2024-01-15T10:30:00",
+                      "typeCustomer": "ACTIVE"
+                    },
+                    "createdAt": 1700000001000
+                  }
+                ]
               }
             }
           }
@@ -2436,8 +2536,8 @@
       ]
     }
   }
-  
-  
+
+
   },
 
 
