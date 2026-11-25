@@ -1,0 +1,18 @@
+---
+title: 'Consultar benefícios sociais'
+openapi: 'GET /v2/analytics/{analyticsId}/beneficios'
+---
+
+Retorna os benefícios sociais do CPF vinculado a uma análise.
+
+<Note>
+  Disponível apenas para análises de **CPF**.
+</Note>
+
+A consulta é assíncrona. Se ainda não existir consulta para a análise, a primeira chamada a inicia e retorna `status` igual a `PROCESSING`. Repita a chamada até o `status` mudar para:
+
+- `DONE`: consulta concluída. Os programas encontrados são retornados em `programs`.
+- `NOTFOUND`: nenhum dado encontrado para o CPF.
+- `ERROR`: falha ao processar a consulta.
+
+Use o valor de `programs[].typeProgram` para listar o histórico de pagamentos do programa em [Listar pagamentos de um benefício social](/api-reference/endpoint/beneficios_pagamentos).
