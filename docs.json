@@ -45,7 +45,9 @@
               "api-reference/endpoint/create-analytics",
               "api-reference/endpoint/consult-analytics",
               "api-reference/endpoint/activities",
-              "api-reference/endpoint/detail"
+              "api-reference/endpoint/detail",
+              "api-reference/endpoint/beneficios",
+              "api-reference/endpoint/beneficios_pagamentos"
             ]
           },
           {

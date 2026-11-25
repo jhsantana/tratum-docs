@@ -1,0 +1,22 @@
+---
+title: 'Listar pagamentos de um benefício social'
+openapi: 'GET /v2/analytics/{analyticsId}/beneficios-pagamentos'
+---
+
+Retorna o histórico paginado de pagamentos de um programa social do CPF vinculado a uma análise, do pagamento mais recente para o mais antigo.
+
+<Note>
+  Este endpoint usa o resultado de [Consultar benefícios sociais](/api-reference/endpoint/beneficios). Aguarde a consulta de benefícios retornar `status` igual a `DONE` antes de listar os pagamentos.
+</Note>
+
+| `typeProgram`       | Programa                          |
+| ------------------- | --------------------------------- |
+| `TYPE_FAMILY`       | Bolsa Família                     |
+| `TYPE_BRASIL`       | Auxílio Brasil                    |
+| `TYPE_EMERGENCIAL`  | Auxílio Emergencial               |
+| `TYPE_DEFESO`       | Seguro Defeso                     |
+| `TYPE_BPC`          | Benefício de Prestação Continuada |
+| `TYPE_RECONSTRUCAO` | Auxílio Reconstrução              |
+| `TYPE_PEDEMEIA`     | Pé-de-Meia                        |
+
+A paginação começa em `page=0`, com `size=10` por padrão.

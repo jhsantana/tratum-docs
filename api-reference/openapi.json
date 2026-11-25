@@ -1315,6 +1315,278 @@
         }
       }
     },
+    "/v2/analytics/{analyticsId}/beneficios": {
+      "get": {
+        "operationId": "getBeneficios",
+        "summary": "Consultar benefícios sociais da análise",
+        "description": "Retorna os benefícios sociais (Bolsa Família, BPC, Auxílio Brasil etc.) do CPF vinculado à análise. Disponível apenas para análises de CPF. Na primeira chamada, a consulta é iniciada e retornada com `status` `PROCESSING`; repita a chamada até o `status` mudar para `DONE`, `NOTFOUND` ou `ERROR`.",
+        "parameters": [
+          {
+            "name": "analyticsId",
+            "in": "path",
+            "description": "ID da análise (`userPlanConsumeAnalyticsId`) - Gerado no endpoint /v2/analytics",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Consulta de benefícios da análise. Enquanto `status` for `PROCESSING`, os campos `hasBenefit`, `programs` e `consultedAt` não são retornados.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenefitConsultResponse"
+                },
+                "examples": {
+                  "concluida": {
+                    "summary": "Consulta concluída",
+                    "value": {
+                      "document": "12345678901",
+                      "status": "DONE",
+                      "hasBenefit": true,
+                      "programs": [
+                        {
+                          "typeProgram": "TYPE_FAMILY",
+                          "programName": "Bolsa Familia",
+                          "programState": "ATIVO",
+                          "startDate": "2023-03-01",
+                          "endDate": "2024-12-01",
+                          "currentAmount": 600.0,
+                          "totalAmount": 13200.0,
+                          "totalInstallments": 22,
+                          "county": "SAO PAULO"
+                        }
+                      ],
+                      "consultedAt": 1732460400000
+                    }
+                  },
+                  "processando": {
+                    "summary": "Consulta em processamento",
+                    "value": {
+                      "document": "12345678901",
+                      "status": "PROCESSING"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido, usuário sem acesso à organização da análise ou plano sem acesso à consulta de benefícios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenefitError"
+                },
+                "examples": {
+                  "USERORGANIZATION_ACCESS_DENIED": {
+                    "summary": "Usuário sem acesso à organização",
+                    "value": {
+                      "type": "USERORGANIZATION_ACCESS_DENIED",
+                      "message": "Usuário não tem acesso a esta Organização"
+                    }
+                  },
+                  "PLAN_NOT_ALLOWED": {
+                    "summary": "Plano sem acesso à consulta de benefícios",
+                    "value": {
+                      "type": "PLAN_NOT_ALLOWED",
+                      "message": "Plano não tem acesso à consulta de benefícios"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Análise, organização ou usuário não encontrado, ou benefícios indisponíveis para a análise (ex.: documento da análise não é um CPF)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenefitError"
+                },
+                "examples": {
+                  "BENEFICIOS_NOT_EXISTS": {
+                    "summary": "Benefícios não encontrados",
+                    "value": {
+                      "type": "BENEFICIOS_NOT_EXISTS",
+                      "message": "Benefícios não encontrados para esta análise"
+                    }
+                  },
+                  "ANALYTICS_NOT_EXISTS": {
+                    "summary": "Análise não encontrada",
+                    "value": {
+                      "type": "ANALYTICS_NOT_EXISTS",
+                      "message": "Análise não encontrada"
+                    }
+                  },
+                  "ORGANIZATION_NOT_EXISTS": {
+                    "summary": "Organização não encontrada",
+                    "value": {
+                      "type": "ORGANIZATION_NOT_EXISTS",
+                      "message": "Organização não encontrada"
+                    }
+                  },
+                  "USERNAME_NOT_EXISTS": {
+                    "summary": "Usuário não existe",
+                    "value": {
+                      "type": "USERNAME_NOT_EXISTS",
+                      "message": "Usuário não existe"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/analytics/{analyticsId}/beneficios-pagamentos": {
+      "get": {
+        "operationId": "getBeneficiosPagamentos",
+        "summary": "Listar pagamentos de um benefício social",
+        "description": "Retorna o histórico paginado de pagamentos de um programa social do CPF vinculado à análise, do mais recente para o mais antigo. Requer que a consulta de benefícios (`GET /v2/analytics/{analyticsId}/beneficios`) já tenha sido realizada e concluída.",
+        "parameters": [
+          {
+            "name": "analyticsId",
+            "in": "path",
+            "description": "ID da análise (`userPlanConsumeAnalyticsId`) - Gerado no endpoint /v2/analytics",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "typeProgram",
+            "in": "query",
+            "description": "Código do programa social, retornado no campo `programs[].typeProgram` da consulta de benefícios: TYPE_FAMILY (Bolsa Família) | TYPE_BRASIL (Auxílio Brasil) | TYPE_EMERGENCIAL (Auxílio Emergencial) | TYPE_DEFESO (Seguro Defeso) | TYPE_BPC (Benefício de Prestação Continuada) | TYPE_RECONSTRUCAO (Auxílio Reconstrução) | TYPE_PEDEMEIA (Pé-de-Meia)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["TYPE_FAMILY", "TYPE_BRASIL", "TYPE_EMERGENCIAL", "TYPE_DEFESO", "TYPE_BPC", "TYPE_RECONSTRUCAO", "TYPE_PEDEMEIA"]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Página a ser retornada, começando em 0",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Quantidade de pagamentos por página",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Histórico paginado de pagamentos do programa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenefitPaymentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parâmetro obrigatório `typeProgram` não informado"
+          },
+          "401": {
+            "description": "Token ausente ou inválido, usuário sem acesso à organização da análise ou plano sem acesso à consulta de benefícios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenefitError"
+                },
+                "examples": {
+                  "USERORGANIZATION_ACCESS_DENIED": {
+                    "summary": "Usuário sem acesso à organização",
+                    "value": {
+                      "type": "USERORGANIZATION_ACCESS_DENIED",
+                      "message": "Usuário não tem acesso a esta Organização"
+                    }
+                  },
+                  "PLAN_NOT_ALLOWED": {
+                    "summary": "Plano sem acesso à consulta de benefícios",
+                    "value": {
+                      "type": "PLAN_NOT_ALLOWED",
+                      "message": "Plano não tem acesso à consulta de benefícios"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`typeProgram` inválido, consulta de benefícios inexistente para a análise, programa não encontrado na consulta, ou análise, organização ou usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenefitError"
+                },
+                "examples": {
+                  "INVALID_TYPE_PROGRAM": {
+                    "summary": "Tipo de programa inválido",
+                    "value": {
+                      "type": "INVALID_TYPE_PROGRAM",
+                      "message": "Tipo de programa inválido"
+                    }
+                  },
+                  "BENEFICIOS_NOT_EXISTS": {
+                    "summary": "Consulta de benefícios não realizada",
+                    "value": {
+                      "type": "BENEFICIOS_NOT_EXISTS",
+                      "message": "Benefícios não encontrados para esta análise"
+                    }
+                  },
+                  "PROGRAM_NOT_EXISTS": {
+                    "summary": "Programa não encontrado na consulta",
+                    "value": {
+                      "type": "PROGRAM_NOT_EXISTS",
+                      "message": "Programa não encontrado para esta análise"
+                    }
+                  },
+                  "ANALYTICS_NOT_EXISTS": {
+                    "summary": "Análise não encontrada",
+                    "value": {
+                      "type": "ANALYTICS_NOT_EXISTS",
+                      "message": "Análise não encontrada"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/v1/organization/{organizationId}/process/{numberProcess}/INACTIVE": {
       "put": {
         "description": "API para inativar um processo",
@@ -2754,6 +3026,214 @@
             },
             "message": {
               "type": ["string", "null"]
+            }
+          }
+        },
+        "BenefitProgramSummary": {
+          "type": "object",
+          "description": "Resumo de um programa social em que o CPF consultado foi encontrado.",
+          "properties": {
+            "typeProgram": {
+              "type": "string",
+              "nullable": true,
+              "enum": ["TYPE_FAMILY", "TYPE_BRASIL", "TYPE_EMERGENCIAL", "TYPE_DEFESO", "TYPE_BPC", "TYPE_RECONSTRUCAO", "TYPE_PEDEMEIA"],
+              "description": "Código do programa. Use este valor no parâmetro `typeProgram` do endpoint de histórico de pagamentos. Ausente quando o programa retornado pela fonte não possui código mapeado.",
+              "example": "TYPE_FAMILY"
+            },
+            "programName": {
+              "type": "string",
+              "description": "Nome do programa social.",
+              "example": "Bolsa Familia"
+            },
+            "programState": {
+              "type": "string",
+              "description": "Situação do benefício no programa, conforme retornado pela fonte.",
+              "example": "ATIVO"
+            },
+            "startDate": {
+              "type": "string",
+              "description": "Data de início do benefício.",
+              "example": "2023-03-01"
+            },
+            "endDate": {
+              "type": "string",
+              "description": "Data de término do benefício.",
+              "example": "2024-12-01"
+            },
+            "currentAmount": {
+              "type": "number",
+              "format": "double",
+              "description": "Valor atual do benefício.",
+              "example": 600.0
+            },
+            "totalAmount": {
+              "type": "number",
+              "format": "double",
+              "description": "Valor total recebido no programa.",
+              "example": 13200.0
+            },
+            "totalInstallments": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Quantidade total de parcelas recebidas.",
+              "example": 22
+            },
+            "county": {
+              "type": "string",
+              "description": "Município vinculado ao benefício.",
+              "example": "SAO PAULO"
+            }
+          }
+        },
+        "BenefitConsultResponse": {
+          "type": "object",
+          "description": "Resultado da consulta de benefícios sociais do CPF vinculado à análise.",
+          "properties": {
+            "document": {
+              "type": "string",
+              "description": "CPF consultado (somente dígitos).",
+              "example": "12345678901"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["PROCESSING", "DONE", "NOTFOUND", "ERROR"],
+              "description": "Situação da consulta. `PROCESSING`: consulta em andamento; `DONE`: consulta concluída; `NOTFOUND`: nenhum dado encontrado para o CPF; `ERROR`: falha ao processar a consulta.",
+              "example": "DONE"
+            },
+            "hasBenefit": {
+              "type": "boolean",
+              "description": "Indica se o CPF recebe algum benefício social. Ausente enquanto a consulta estiver em `PROCESSING`.",
+              "example": true
+            },
+            "programs": {
+              "type": "array",
+              "description": "Programas sociais encontrados para o CPF.",
+              "items": {
+                "$ref": "#/components/schemas/BenefitProgramSummary"
+              }
+            },
+            "consultedAt": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Data de conclusão da consulta em epoch millis. Ausente enquanto a consulta estiver em `PROCESSING`.",
+              "example": 1732460400000
+            }
+          },
+          "example": {
+            "document": "12345678901",
+            "status": "DONE",
+            "hasBenefit": true,
+            "programs": [
+              {
+                "typeProgram": "TYPE_FAMILY",
+                "programName": "Bolsa Familia",
+                "programState": "ATIVO",
+                "startDate": "2023-03-01",
+                "endDate": "2024-12-01",
+                "currentAmount": 600.0,
+                "totalAmount": 13200.0,
+                "totalInstallments": 22,
+                "county": "SAO PAULO"
+              }
+            ],
+            "consultedAt": 1732460400000
+          }
+        },
+        "BenefitPaymentItem": {
+          "type": "object",
+          "description": "Pagamento de um programa social.",
+          "properties": {
+            "paymentReferenceDate": {
+              "type": "string",
+              "description": "Data de referência do pagamento.",
+              "example": "2024-12-01"
+            },
+            "paymentValue": {
+              "type": "number",
+              "format": "double",
+              "description": "Valor pago.",
+              "example": 600.0
+            }
+          }
+        },
+        "BenefitPaymentResponse": {
+          "type": "object",
+          "description": "Histórico paginado de pagamentos de um programa social, ordenado do pagamento mais recente para o mais antigo.",
+          "properties": {
+            "typeProgram": {
+              "type": "string",
+              "description": "Código do programa consultado.",
+              "example": "TYPE_FAMILY"
+            },
+            "programName": {
+              "type": "string",
+              "description": "Nome do programa consultado.",
+              "example": "Bolsa Familia"
+            },
+            "total": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Quantidade total de pagamentos do programa.",
+              "example": 22
+            },
+            "page": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Página retornada (começa em 0).",
+              "example": 0
+            },
+            "size": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Quantidade de itens por página.",
+              "example": 10
+            },
+            "totalPages": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Quantidade total de páginas.",
+              "example": 3
+            },
+            "payments": {
+              "type": "array",
+              "description": "Pagamentos da página solicitada.",
+              "items": {
+                "$ref": "#/components/schemas/BenefitPaymentItem"
+              }
+            }
+          },
+          "example": {
+            "typeProgram": "TYPE_FAMILY",
+            "programName": "Bolsa Familia",
+            "total": 22,
+            "page": 0,
+            "size": 2,
+            "totalPages": 11,
+            "payments": [
+              {
+                "paymentReferenceDate": "2024-12-01",
+                "paymentValue": 600.0
+              },
+              {
+                "paymentReferenceDate": "2024-11-01",
+                "paymentValue": 600.0
+              }
+            ]
+          }
+        },
+        "BenefitError": {
+          "type": "object",
+          "description": "Corpo de erro dos endpoints de benefícios sociais.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Código do erro.",
+              "example": "BENEFICIOS_NOT_EXISTS"
+            },
+            "message": {
+              "type": "string",
+              "description": "Mensagem descritiva do erro.",
+              "example": "Benefícios não encontrados para esta análise"
             }
           }
         },
